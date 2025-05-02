@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { assets, rooms as allRooms } from '../assets/assets.js';
-import Title from '../components/Title'; // ✅ Mở comment
-import RoomItem from '../components/RoomItem.jsx';
+import Title from '../components/Title'; 
+import RoomItem from '../pages/RoomItem.jsx';
 
 const RoomCollection = () => {
   const [showFilter, setShowFilter] = useState(false);
