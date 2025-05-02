@@ -1,0 +1,19 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# OS-specific
+.DS_Store
+
+# npm debug files
+npm-debug.log*
+
+# Optional: PostgreSQL dump or temp files (if used)
+*.sql
+*.dump
