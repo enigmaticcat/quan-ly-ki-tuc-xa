@@ -1,4 +1,4 @@
-const pool = require("../database");
+const pool = require("../../database");
 const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 const crypto = require("crypto");
@@ -50,5 +50,19 @@ exports.getAllRooms = async (req, res) => {
     } catch (err) {
         console.error("Get All Rooms Error:", err.message);
         res.status(500).json({ status: "error", message: "Failed to retrieve rooms" });
+    }
+}
+
+exports.getRoomById = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query(`SELECT * FROM ROOM WHERE id=$1`, [id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ status: "error", message: "Room not found" });
+        }
+        res.json({ status: "success", data: result.rows[0] });
+    } catch (err) {
+        console.error("Get Room By ID Error:", err.message);
+        res.status(500).json({ status: "error", message: "Failed to retrieve room" });
     }
 }
