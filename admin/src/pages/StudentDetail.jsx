@@ -68,6 +68,9 @@ const StudentDetail = () => {
 
         <span className="font-medium">Thanh toán:</span>
         <span className="text-red-500">Chưa thanh toán tháng 6</span>
+
+        <span className="font-medium">Các loại đơn từ:</span>
+        <span className="text-red-500">Đơn xin nghỉ phép</span>
       </div>
 
       {/* nút tuỳ chọn */}
