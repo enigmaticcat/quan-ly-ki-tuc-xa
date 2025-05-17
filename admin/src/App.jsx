@@ -9,8 +9,11 @@ import Login from './components/Login';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import StudentList from './pages/StudentList';
+import StudentDetail from './pages/StudentDetail';
+import EditStudent from './pages/EditStudent';
+import EditRoom from './pages/EditRoom';
 
-export const currency = "₫"; // Hoặc giữ "$" nếu bạn chưa muốn chuyển
+export const currency = "₫"; 
 
 const App = () => {
   return (
@@ -27,6 +30,9 @@ const App = () => {
             <Route path='/list-room' element={<ListRoom />} />
             <Route path='/add-student' element={<AddStudent />} />
             <Route path='/list-student' element={<StudentList />} />
+            <Route path="/student/:id" element={<StudentDetail />} />
+            <Route path="/edit-student/:id" element={<EditStudent />} />
+            <Route path="/edit-room/:id" element={<EditRoom />} />
           </Routes>
         </div>
       </div>

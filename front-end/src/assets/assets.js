@@ -17,7 +17,7 @@ import upload_icon from './upload_icon.png'
 import stripe_logo from './stripe_logo.png'
 import razorpay_logo from './razorpay_logo.png'
 import image_hust from './image_hust.png'
-
+import bell from './bell.png'
 import room1 from './doc1.png'
 import room2 from './doc2.png'
 import room3 from './doc3.png'
@@ -55,7 +55,7 @@ export const assets = {
     stripe_logo,
     razorpay_logo,
     image_hust,
-
+    bell,
     room1,
     room2,
     room3,
@@ -75,19 +75,20 @@ export const assets = {
 
 
 export const rooms = [
-    { _id: 'r1', name: 'Phòng 101', image: room1, building: 'B5', gender: 'Nam', capacity: 4, floor: 1, facilities: ['Máy lạnh', 'Wifi'] },
-    { _id: 'r2', name: 'Phòng 102', image: room2, building: 'B5', gender: 'Nữ', capacity: 6, floor: 2, facilities: ['Máy lạnh', 'Tủ đồ', 'WC riêng'] },
-    { _id: 'r3', name: 'Phòng 103', image: room3, building: 'B6', gender: 'Nam', capacity: 8, floor: 3, facilities: ['Wifi', 'Tủ đồ'] },
-    { _id: 'r4', name: 'Phòng 104', image: room4, building: 'B3', gender: 'Nam', capacity: 4, floor: 1, facilities: ['Máy lạnh', 'Wifi'] },
-    { _id: 'r5', name: 'Phòng 105', image: room5, building: 'B8', gender: 'Nữ', capacity: 4, floor: 2, facilities: ['WC riêng'] },
-    { _id: 'r6', name: 'Phòng 106', image: room6, building: 'B9', gender: 'Nam', capacity: 6, floor: 4, facilities: ['Máy lạnh', 'Tủ đồ'] },
-    { _id: 'r7', name: 'Phòng 107', image: room7, building: 'B10', gender: 'Nam', capacity: 4, floor: 2, facilities: ['Máy lạnh', 'Wifi'] },
-    { _id: 'r8', name: 'Phòng 108', image: room8, building: 'B7', gender: 'Nữ', capacity: 4, floor: 1, facilities: ['Wifi'] },
-    { _id: 'r9', name: 'Phòng 109', image: room9, building: 'B13', gender: 'Nam', capacity: 6, floor: 3, facilities: ['Máy lạnh', 'Tủ đồ'] },
-    { _id: 'r10', name: 'Phòng 110', image: room10, building: 'B13b', gender: 'Nữ', capacity: 4, floor: 2, facilities: ['WC riêng', 'Wifi'] },
-    { _id: 'r11', name: 'Phòng 111', image: room11, building: 'B5b', gender: 'Nam', capacity: 4, floor: 1, facilities: ['Máy lạnh', 'WC riêng'] },
-    { _id: 'r12', name: 'Phòng 112', image: room12, building: 'B5', gender: 'Nữ', capacity: 6, floor: 5, facilities: ['Wifi'] },
-    { _id: 'r13', name: 'Phòng 113', image: room13, building: 'B7', gender: 'Nam', capacity: 8, floor: 3, facilities: ['Máy lạnh', 'Tủ đồ', 'WC riêng'] },
-    { _id: 'r14', name: 'Phòng 114', image: room14, building: 'B6', gender: 'Nữ', capacity: 4, floor: 4, facilities: ['Wifi', 'WC riêng'] },
-    { _id: 'r15', name: 'Phòng 115', image: room15, building: 'B3', gender: 'Nam', capacity: 4, floor: 2, facilities: ['Máy lạnh', 'Tủ đồ'] },
+    { _id: 'r1', name: 'Phòng 101', image: room1, building: 'B5', gender: 'Nam', capacity: 4, available: 2, floor: 1, facilities: ['Máy lạnh', 'Wifi'] },
+    { _id: 'r2', name: 'Phòng 102', image: room2, building: 'B5', gender: 'Nữ', capacity: 6, available: 0, floor: 2, facilities: ['Máy lạnh', 'Tủ đồ', 'WC riêng'] },
+    { _id: 'r3', name: 'Phòng 103', image: room3, building: 'B6', gender: 'Nam', capacity: 8, available: 3, floor: 3, facilities: ['Wifi', 'Tủ đồ'] },
+    { _id: 'r4', name: 'Phòng 104', image: room4, building: 'B3', gender: 'Nam', capacity: 4, available: 1, floor: 1, facilities: ['Máy lạnh', 'Wifi'] },
+    { _id: 'r5', name: 'Phòng 105', image: room5, building: 'B8', gender: 'Nữ', capacity: 4, available: 4, floor: 2, facilities: ['WC riêng'] },
+    { _id: 'r6', name: 'Phòng 106', image: room6, building: 'B9', gender: 'Nam', capacity: 6, available: 0, floor: 4, facilities: ['Máy lạnh', 'Tủ đồ'] },
+    { _id: 'r7', name: 'Phòng 107', image: room7, building: 'B10', gender: 'Nam', capacity: 4, available: 2, floor: 2, facilities: ['Máy lạnh', 'Wifi'] },
+    { _id: 'r8', name: 'Phòng 108', image: room8, building: 'B7', gender: 'Nữ', capacity: 4, available: 1, floor: 1, facilities: ['Wifi'] },
+    { _id: 'r9', name: 'Phòng 109', image: room9, building: 'B13', gender: 'Nam', capacity: 6, available: 2, floor: 3, facilities: ['Máy lạnh', 'Tủ đồ'] },
+    { _id: 'r10', name: 'Phòng 110', image: room10, building: 'B13b', gender: 'Nữ', capacity: 4, available: 0, floor: 2, facilities: ['WC riêng', 'Wifi'] },
+    { _id: 'r11', name: 'Phòng 111', image: room11, building: 'B5b', gender: 'Nam', capacity: 4, available: 1, floor: 1, facilities: ['Máy lạnh', 'WC riêng'] },
+    { _id: 'r12', name: 'Phòng 112', image: room12, building: 'B5', gender: 'Nữ', capacity: 6, available: 3, floor: 5, facilities: ['Wifi'] },
+    { _id: 'r13', name: 'Phòng 113', image: room13, building: 'B7', gender: 'Nam', capacity: 8, available: 5, floor: 3, facilities: ['Máy lạnh', 'Tủ đồ', 'WC riêng'] },
+    { _id: 'r14', name: 'Phòng 114', image: room14, building: 'B6', gender: 'Nữ', capacity: 4, available: 2, floor: 4, facilities: ['Wifi', 'WC riêng'] },
+    { _id: 'r15', name: 'Phòng 115', image: room15, building: 'B3', gender: 'Nam', capacity: 4, available: 0, floor: 2, facilities: ['Máy lạnh', 'Tủ đồ'] },
 ];
+

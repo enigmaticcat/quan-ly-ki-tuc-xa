@@ -141,6 +141,7 @@ const RoomCollection = () => {
               capacity={room.capacity}
               floor={room.floor}
               facilities={room.facilities}
+              available={room.available}
             />
           ))}
         </div>
