@@ -1,9 +1,10 @@
 const router = require('express').Router();
 const roomRouting = require('../api/Room/room');
 const roomRegistrationRouting = require('../api/Room/roomRegistration');
+const upload = require('../middleware/upload');
 
-router.post('/createRoom', roomRouting.createRoom);
-router.put('/updateRoom/:id', roomRouting.updateRoom);
+router.post('/createRoom',upload.single(image), roomRouting.createRoom);
+router.put('/updateRoom/:id',upload.single(image), roomRouting.updateRoom);
 router.delete('/deleteRoom/:id', roomRouting.deleteRoom);
 router.get('/getAllRoom', roomRouting.getAllRooms);
 router.get('/getRoomById/:id', roomRouting.getRoomById);

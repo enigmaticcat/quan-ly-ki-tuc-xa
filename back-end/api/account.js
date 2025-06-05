@@ -12,7 +12,7 @@ const generateOTP = () => {
 
 
 exports.register = async (req, res, next) => {
-    const { name, email, password } = req.body;
+    const { fullname, email, password } = req.body;
 
     try {
         const result = await pool.query(
@@ -28,7 +28,7 @@ exports.register = async (req, res, next) => {
         }
         const hashedPassword = await bcrypt.hash(password, 12);
         const newUser = await pool.query(
-            `INSERT INTO USERS(fullname, email, password) VALUES($1, $2, $3)`, [name, email, hashedPassword]
+            `INSERT INTO USERS(fullname, email, password) VALUES($1, $2, $3)`, [fullname, email, hashedPassword]
         );
         // res.json(newUser.rows[0]);
         return res.status(200).json({
@@ -45,12 +45,12 @@ exports.register = async (req, res, next) => {
 };
 
 
-exports.sendOTP = async (req, res, next) => {
+// exports.sendOTP = async (req, res, next) => {
         
-};
-exports.verifyOTP = async (req, res, next) => {
+// };
+// exports.verifyOTP = async (req, res, next) => {
 
-};
+// };
 
 exports.login = async (req, res, next) => {
     const { email, password } = req.body;

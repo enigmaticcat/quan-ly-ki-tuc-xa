@@ -1,3 +1,4 @@
+const e = require("cors");
 const pool = require("../../database");
 
 exports.getUserInfo = async (req, res) => {
@@ -13,24 +14,56 @@ exports.getUserInfo = async (req, res) => {
         res.status(500).json({ status: "error", message: "Failed to retrieve user info" });
     }
 }
+exports.getAllUsers = async (req, res) => {
+    try {
+        const result = await pool.query(`SELECT * FROM USERS`);
+        res.json({ status: "success", data: result.rows });
+    } catch (err) {
+        console.error("Get All Users Error:", err.message);
+        res.status(500).json({ status: "error", message: "Failed to retrieve users" });
+    }
+}
 exports.updateUserInfo = async (req, res) => {
     const { id } = req.params;
-    const { name, email, phone, address, gender, birthday } = req.body;
+    const fields = ['name', 'email', 'phone', 'address', 'gender', 'birthday', 'user_class', 'mssv'];
+    const updates = [];
+    const values = [];
+    let i = 1;
+
+    for (let field of fields) {
+        if (req.body[field] !== undefined) {
+            updates.push(`${field} = $${i}`);
+            values.push(req.body[field]);
+            i++;
+        }
+    }
+
+    if (updates.length === 0) {
+        return res.status(400).json({ message: 'No valid fields to update.' });
+    }
+
+    values.push(id); // Add ID as last parameter
+
+    const query = `UPDATE users SET ${updates.join(', ')} WHERE id = $${i}`;
 
     try {
-        await pool.query(
-            `UPDATE users 
-             SET name = $1, email = $2, phone = $3, address = $4, gender = $5, birthday = $6 
-             WHERE id = $7`,
-            [name, email, phone, address, gender, birthday, id]
-        );
-
+        await pool.query(query, values);
         res.status(200).json({ message: 'User info updated successfully.' });
-    } catch (error) {
-        console.error('Error updating user info:', error);
-        res.status(500).json({ error: 'An error occurred while updating user info.' });
+    } catch (err) {
+        console.error('Error updating user info:', err.message);
+        res.status(500).json({ error: 'Failed to update user info.' });
     }
 };
-
+exports.deleteUser = async (req, res) => {
+    const { id } = req.params;
+    try {
+        // Because of ON DELETE CASCADE, USER_ACCOMMODATION rows are auto-deleted
+        await pool.query(`DELETE FROM USERS WHERE id=$1`, [id]);
+        res.json({ status: "success", message: "User deleted successfully" });
+    } catch (err) {
+        console.error("Delete User Error:", err.message);
+        res.status(500).json({ status: "error", message: "User deletion failed" });
+    }
+}
 
     
