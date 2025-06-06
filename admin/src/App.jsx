@@ -1,7 +1,7 @@
-import React from 'react';
+// admin/src/App.jsx
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom'; // Thêm useLocation
 import AddRoom from './pages/AddRoom';
 import ListRoom from './pages/ListRoom';
 import AddStudent from './pages/AddStudent';
@@ -12,27 +12,39 @@ import StudentList from './pages/StudentList';
 import StudentDetail from './pages/StudentDetail';
 import EditStudent from './pages/EditStudent';
 import EditRoom from './pages/EditRoom';
+import ProtectedRoute from './components/ProtectedRoute'; // IMPORT ProtectedRoute
 
 export const currency = "₫"; 
 
 const App = () => {
+  const location = useLocation();
+  const isAdminLoggedIn = !!localStorage.getItem('adminToken'); // Kiểm tra trạng thái đăng nhập
+
+  // Không hiển thị Navbar và Sidebar trên trang Login
+  const showLayout = location.pathname !== '/';
+
   return (
     <div className='bg-gray-50 min-h-screen'>
       <ToastContainer />
-      <Navbar />
-      <hr />
-      <div className='flex w-full'>
-        <Sidebar />
-        <div className="w-[70%] mx-auto ml-[max(5vw,25px)] my-8 text-gray-600 text-base">
+      {showLayout && isAdminLoggedIn && <Navbar />} {/* Chỉ hiển thị Navbar nếu đã đăng nhập VÀ không ở trang login */}
+      <hr className={showLayout && isAdminLoggedIn ? '' : 'hidden'}/>
+      <div className={`flex w-full ${showLayout && isAdminLoggedIn ? '' : 'justify-center'}`}> {/* Căn giữa nếu chỉ có Login */}
+        {showLayout && isAdminLoggedIn && <Sidebar />} {/* Chỉ hiển thị Sidebar nếu đã đăng nhập VÀ không ở trang login */}
+        <div className={`${showLayout && isAdminLoggedIn ? 'w-[70%] mx-auto ml-[max(5vw,25px)]' : 'w-full'} my-8 text-gray-600 text-base`}>
           <Routes>
             <Route path='/' element={<Login />} />
-            <Route path='/add-room' element={<AddRoom />} />
-            <Route path='/list-room' element={<ListRoom />} />
-            <Route path='/add-student' element={<AddStudent />} />
-            <Route path='/list-student' element={<StudentList />} />
-            <Route path="/student/:id" element={<StudentDetail />} />
-            <Route path="/edit-student/:id" element={<EditStudent />} />
-            <Route path="/edit-room/:id" element={<EditRoom />} />
+            {/* Bọc các route admin bằng ProtectedRoute */}
+            <Route element={<ProtectedRoute />}>
+              <Route path='/list-room' element={<ListRoom />} />
+              <Route path='/add-room' element={<AddRoom />} />
+              <Route path='/edit-room/:id' element={<EditRoom />} />
+              <Route path='/list-student' element={<StudentList />} />
+              <Route path='/add-student' element={<AddStudent />} />
+              <Route path="/student/:id" element={<StudentDetail />} />
+              <Route path="/edit-student/:id" element={<EditStudent />} />
+              {/* Thêm các route admin khác vào đây */}
+            </Route>
+            {/* Bạn có thể thêm route 404 ở đây nếu muốn */}
           </Routes>
         </div>
       </div>

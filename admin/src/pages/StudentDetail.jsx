@@ -34,7 +34,7 @@ const StudentDetail = () => {
   const navigate = useNavigate();
   const student = mockStudents.find((s) => s.id === id);
 
-  const [info, setInfo] = useState(student); // để demo sửa inline
+  const [info] = useState(student); // để demo sửa inline
 
   if (!info) return <p className="p-8 text-red-500">Không tìm thấy sinh viên.</p>;
 

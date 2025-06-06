@@ -2,8 +2,8 @@ const pool = require("../database");
 const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 const crypto = require("crypto");
-dotenv.config({ path: "../process.env" });
-
+// dotenv.config({ path: "../process.env" });
+const jwt = require('jsonwebtoken'); // IMPORT JWT
 
 const generateOTP = () => {
     const otp = Math.floor(100000 + Math.random() * 900000); // Ensures a 6-digit number between 100000 and 999999
@@ -52,10 +52,15 @@ exports.register = async (req, res, next) => {
 
 // };
 
+const signToken = (id) => {
+    return jwt.sign({ id: id }, process.env.JWT_SECRET, { // Sử dụng process.env
+        expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+};
+
 exports.login = async (req, res, next) => {
     const { email, password } = req.body;
 
-    // Validate input
     if (!email || !password) {
         return res.status(400).json({
             status: "error",
@@ -63,34 +68,54 @@ exports.login = async (req, res, next) => {
         });
     }
     try {
-        // Query user by email
+        // Query user by email, lấy cả id, password và role (và các trường cần thiết khác)
         const userDoc = await pool.query(
-            "SELECT password FROM USERS WHERE email = $1",
+            "SELECT id, fullname, email, password, role, avatar FROM USERS WHERE email = $1", // Thêm role, avatar
             [email]
         );
-        // Check if user exists
+        
         if (userDoc.rows.length === 0) {
-            return res.status(400).json({
+            return res.status(401).json({ // 401 Unauthorized
                 status: "error",
                 message: "Email or password is incorrect",
             });
         }
-        // Extract the hashed password
-        const hashedPassword = userDoc.rows[0].password;
-        // Compare passwords
+
+        const user = userDoc.rows[0];
+        const hashedPassword = user.password;
+        
         const isPasswordCorrect = await bcrypt.compare(password, hashedPassword);
         if (!isPasswordCorrect) {
-            return res.status(400).json({
+            return res.status(401).json({ // 401 Unauthorized
                 status: "error",
                 message: "Email or password is incorrect",
             });
         }
+
+        // Kiểm tra xem có phải admin không (nếu trang admin yêu cầu role admin)
+        if (user.role !== 'admin') { // Giả sử role của admin là 'admin'
+            return res.status(403).json({ // 403 Forbidden
+                status: "error",
+                message: "You do not have permission to access this resource.",
+            });
+        }
+
+        // Tạo token
+        const token = signToken(user.id);
+
+        // Loại bỏ password khỏi đối tượng user trước khi gửi về client
+        const { password: _, ...userWithoutPassword } = user;
+
         return res.status(200).json({
             status: "success",
             message: "Login successful",
+            token,
+            data: {
+                user: userWithoutPassword // Gửi thông tin user (không có password)
+            }
         });
     } catch (err) {
-        console.error("Error during login:", err.message);
+        console.error("Error during login:", err.message, err.stack);
         return res.status(500).json({
             status: "error",
             message: "An error occurred while processing your request.",
