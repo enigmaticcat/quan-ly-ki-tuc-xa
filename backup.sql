@@ -644,4 +644,8 @@ ALTER TABLE ONLY public.roomregistration
 --
 -- PostgreSQL database dump complete
 --
+ALTER TABLE public.users
+ADD COLUMN role VARCHAR(50) DEFAULT 'user';
 
+ALTER TABLE public.users
+ADD COLUMN avatar VARCHAR(255) NULL;
