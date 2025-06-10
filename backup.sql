@@ -658,3 +658,15 @@ CREATE TABLE public.notifications (
     author_id INTEGER REFERENCES public.users(id) NULL, -- ID của admin đã đăng thông báo (tùy chọn)
     is_published BOOLEAN DEFAULT TRUE -- Để admin có thể soạn thảo trước khi đăng
 );
+
+
+CREATE TABLE public.user_personal_notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    link_to TEXT NULL, -- Đường dẫn để điều hướng khi click vào thông báo (ví dụ: /status, /check-out)
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_user_personal_notifications_user_id_is_read ON public.user_personal_notifications (user_id, is_read);
