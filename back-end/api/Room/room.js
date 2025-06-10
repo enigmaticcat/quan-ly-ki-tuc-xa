@@ -87,20 +87,45 @@ exports.deleteRoom = async (req, res) => {
 
 exports.getAllRooms = async (req, res) => {
     try {
-        // Fetch rooms with accommodations as array aggregated
-        const result = await pool.query(`
+        // Lấy tất cả thông tin cơ bản của phòng và tổng hợp tiện nghi
+        const roomResult = await pool.query(`
             SELECT r.*, 
                    COALESCE(array_agg(ra.accommodation) FILTER (WHERE ra.accommodation IS NOT NULL), '{}') AS accommodations
             FROM ROOM r
             LEFT JOIN ROOM_ACCOMMODATION ra ON r.id = ra.room_id
             GROUP BY r.id
+            ORDER BY r.building_name, r.room_number ASC -- Sắp xếp cho dễ nhìn
         `);
-        res.json({ status: "success", data: result.rows });
+
+        if (roomResult.rows.length === 0) {
+            return res.json({ status: "success", data: [] });
+        }
+
+        // Với mỗi phòng, tính toán số lượng sinh viên đang ở (occupied_slots)
+        const roomsWithOccupancy = await Promise.all(roomResult.rows.map(async (room) => {
+            const occupancyResult = await pool.query(
+                `SELECT COUNT(id) as occupied_count 
+                 FROM ROOMREGISTRATION 
+                 WHERE room_id = $1 AND status = 'Approved'`, // Chỉ đếm những yêu cầu đã được duyệt
+                [room.id]
+            );
+            const occupied_slots = parseInt(occupancyResult.rows[0].occupied_count, 10) || 0;
+            const available_slots = room.capacity - occupied_slots;
+
+            return { 
+                ...room, 
+                occupied_slots: occupied_slots,
+                available_slots: available_slots // Trả về cả số chỗ còn trống
+            };
+        }));
+
+        res.json({ status: "success", data: roomsWithOccupancy });
+
     } catch (err) {
-        console.error("Get All Rooms Error:", err.message);
-        res.status(500).json({ status: "error", message: "Failed to retrieve rooms" });
+        console.error("Lỗi khi lấy tất cả phòng:", err.message, err.stack);
+        res.status(500).json({ status: "error", message: "Lỗi server khi lấy danh sách phòng." });
     }
-}
+};
 
 exports.getRoomById = async (req, res) => {
     const { id } = req.params;
@@ -123,3 +148,24 @@ exports.getRoomById = async (req, res) => {
         res.status(500).json({ status: "error", message: "Failed to retrieve room" });
     }
 }
+exports.getStudentsInRoom = async (req, res) => {
+    const { roomId } = req.params;
+    try {
+        // Giả định bạn có bảng ROOMREGISTRATION với status='Approved' cho sinh viên đang ở phòng đó
+        // Hoặc nếu bạn có một bảng khác quản lý việc sinh viên nào ở phòng nào (ví dụ: USER_ROOMS)
+        const result = await pool.query(
+            `SELECT u.id, u.fullname, u.mssv, u.email, u.user_class 
+             FROM USERS u
+             JOIN ROOMREGISTRATION rr ON u.id = rr.user_id
+             WHERE rr.room_id = $1 AND rr.status = 'Approved'`, 
+            [roomId]
+        );
+        // Nếu bạn có bảng USER_ROOMS(user_id, room_id, check_in_date, check_out_date) thì query sẽ khác
+        // Ví dụ: SELECT u.* FROM USERS u JOIN USER_ROOMS ur ON u.id = ur.user_id WHERE ur.room_id = $1 AND ur.check_out_date IS NULL
+
+        res.json({ status: "success", data: result.rows });
+    } catch (err) {
+        console.error(`Lỗi khi lấy danh sách sinh viên trong phòng ${roomId}:`, err.message, err.stack);
+        res.status(500).json({ status: "error", message: "Lỗi server khi lấy danh sách sinh viên." });
+    }
+};

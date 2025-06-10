@@ -93,12 +93,12 @@ exports.login = async (req, res, next) => {
         }
 
         // Kiểm tra xem có phải admin không (nếu trang admin yêu cầu role admin)
-        if (user.role !== 'admin') { // Giả sử role của admin là 'admin'
-            return res.status(403).json({ // 403 Forbidden
-                status: "error",
-                message: "You do not have permission to access this resource.",
-            });
-        }
+        // if (user.role !== 'admin') { // Giả sử role của admin là 'admin'
+        //     return res.status(403).json({ // 403 Forbidden
+        //         status: "error",
+        //         message: "You do not have permission to access this resource.",
+        //     });
+        // }    
 
         // Tạo token
         const token = signToken(user.id);

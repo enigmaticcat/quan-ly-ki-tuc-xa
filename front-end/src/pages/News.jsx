@@ -1,39 +1,70 @@
-import React, { useState } from 'react';
+// C:\Users\Admin\OneDrive - Hanoi University of Science and Technology\backup\kì 6\Project 2\PRJ\quan-ly-ki-tuc-xa\front-end\src\pages\News.jsx
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const NotificationPage = () => {
-  const [notifications, setNotifications] = useState([
-    {
-      title: 'Thông báo đóng tiền KTX tháng 5',
-      content: 'Sinh viên vui lòng hoàn tất việc đóng tiền KTX tháng 5 trước ngày 10/05/2025 để tránh bị xử lý theo quy định.',
-      date: '01/05/2025',
-    },
-    {
-      title: 'Lịch cắt điện khu A',
-      content: 'Do bảo trì, khu A sẽ cắt điện từ 8h00 đến 12h00 ngày 04/05/2025. Sinh viên vui lòng chủ động sạc thiết bị.',
-      date: '30/04/2025',
-    },
-    {
-      title: 'Tăng cường kiểm tra vệ sinh phòng ở',
-      content: 'BQL KTX sẽ tiến hành kiểm tra vệ sinh định kỳ vào tuần tới. Các phòng cần dọn dẹp sạch sẽ, tránh để rác bừa bãi.',
-      date: '27/04/2025',
-    },
-  ]);
+const NewsPage = () => { // Đổi tên component cho rõ ràng hơn (trước là NotificationPage)
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+  useEffect(() => {
+    if (!API_BASE_URL) {
+        setError("Lỗi cấu hình API.");
+        setLoading(false);
+        return;
+    }
+    const fetchPublishedNotifications = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await axios.get(`${API_BASE_URL}/notification/published`);
+        if (response.data && response.data.status === 'success') {
+          setNotifications(response.data.data);
+        } else {
+          setError(response.data.message || "Không thể tải thông báo.");
+        }
+      } catch (err) {
+        setError(err.response?.data?.message || "Lỗi server khi tải thông báo.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPublishedNotifications();
+  }, [API_BASE_URL]);
+
+  if (loading) return <p className="p-10 text-center">Đang tải thông báo...</p>;
+  if (error) return <p className="p-10 text-center text-red-500">Lỗi: {error}</p>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 border-t mt-10 font-sans text-gray-800">
-      <h2 className="text-3xl font-bold mb-6 text-red-700 uppercase tracking-wide">Thông báo từ ban quản lý KTX</h2>
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 border-t mt-10 font-sans text-gray-800">
+      <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-primary uppercase tracking-wide">
+        Thông báo từ Ban Quản lý KTX
+      </h2>
 
-      <div className="flex flex-col gap-6">
-        {notifications.map((notice, index) => (
-          <div key={index} className="border border-gray-300 bg-white shadow-sm rounded-lg p-5">
-            <h3 className="text-xl font-semibold text-red-600 mb-1">{notice.title}</h3>
-            <p className="text-sm text-gray-600 mb-2">{notice.date}</p>
-            <p className="text-base text-gray-800 leading-relaxed">{notice.content}</p>
-          </div>
-        ))}
-      </div>
+      {notifications.length === 0 && !loading && (
+        <p className="text-center text-gray-500 py-10">Hiện chưa có thông báo nào.</p>
+      )}
+
+      {notifications.length > 0 && (
+        <div className="flex flex-col gap-6">
+          {notifications.map((notice) => (
+            <div key={notice.id} className="border border-gray-200 bg-white shadow-lg rounded-lg p-5 hover:shadow-xl transition-shadow">
+              <h3 className="text-xl font-semibold text-primary mb-1.5">{notice.title}</h3>
+              <p className="text-xs text-gray-500 mb-3">
+                Đăng ngày: {new Date(notice.created_at).toLocaleString('vi-VN')}
+              </p>
+              {/* Sử dụng dangerouslySetInnerHTML nếu content là HTML, hoặc pre-wrap nếu là text thuần */}
+              <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap"> 
+                {notice.content}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
-export default NotificationPage;
+export default NewsPage; // Đổi tên export

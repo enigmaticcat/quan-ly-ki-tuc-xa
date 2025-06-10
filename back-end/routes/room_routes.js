@@ -14,5 +14,6 @@ router.put('/updateRegistration/:id', roomRegistrationRouting.updateRegistration
 router.get('/getAllRegistrations', roomRegistrationRouting.getAllRegistrations);
 router.get('/getRegistrationById/:id', roomRegistrationRouting.getRegistrationById);
 router.get('/getUserRegistrations/:user_id', roomRegistrationRouting.getUserRegistrations);
+router.get('/getStudentsInRoom/:roomId', roomRouting.getStudentsInRoom);
 
 module.exports = router;

@@ -118,6 +118,12 @@ const RoomList = () => {
               >
                 ❌ Xóa
               </button>
+              <button
+  onClick={() => navigate(`/admin-room-detail/${room.id}`)} // Điều hướng
+  className="text-purple-600 hover:underline text-xs" // Đổi màu cho khác nút Sửa/Xóa
+>
+  Chi Tiết
+</button>
             </div>
           </div>
         ))}

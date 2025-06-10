@@ -13,6 +13,13 @@ import StudentDetail from './pages/StudentDetail';
 import EditStudent from './pages/EditStudent';
 import EditRoom from './pages/EditRoom';
 import ProtectedRoute from './components/ProtectedRoute'; // IMPORT ProtectedRoute
+import ListRegistrations from './pages/ListRegistrations';
+import CreateBill from './pages/CreateBill';
+import ListBills from './pages/ListBills';
+import AdminBillDetail from './pages/AdminBillDetail';
+import ListForms from './pages/ListForms';
+import AdminRoomDetail from './pages/AdminRoomDetail';
+import ManageNotifications from './pages/ManageNotifications';
 
 export const currency = "₫"; 
 
@@ -42,6 +49,13 @@ const App = () => {
               <Route path='/add-student' element={<AddStudent />} />
               <Route path="/student/:id" element={<StudentDetail />} />
               <Route path="/edit-student/:id" element={<EditStudent />} />
+              <Route path='/list-registrations' element={<ListRegistrations />} />
+              <Route path='/create-bill' element={<CreateBill />} />
+              <Route path='/list-bills' element={<ListBills />} />
+              <Route path='/admin-bill-detail/:billId' element={<AdminBillDetail />} />
+              <Route path='/list-forms' element={<ListForms />} />
+              <Route path='/admin-room-detail/:roomId' element={<AdminRoomDetail />} />
+              <Route path='/manage-notifications' element={<ManageNotifications />} />
               {/* Thêm các route admin khác vào đây */}
             </Route>
             {/* Bạn có thể thêm route 404 ở đây nếu muốn */}
