@@ -649,3 +649,12 @@ ADD COLUMN role VARCHAR(50) DEFAULT 'user';
 
 ALTER TABLE public.users
 ADD COLUMN avatar VARCHAR(255) NULL;
+
+CREATE TABLE public.notifications (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    author_id INTEGER REFERENCES public.users(id) NULL, -- ID của admin đã đăng thông báo (tùy chọn)
+    is_published BOOLEAN DEFAULT TRUE -- Để admin có thể soạn thảo trước khi đăng
+);
