@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'; // Thêm useNavigate 
 import axios from 'axios';
 import { assets } from '../assets/assets';
 import { AppContext } from '../context/AppContext'; // Import AppContext
+import RoomItem from '../pages/RoomItem';
 
 const BACKEND_STATIC_URL = 'http://localhost:5000';
 
@@ -22,9 +23,9 @@ const RoomDetail = () => {
   useEffect(() => {
     // ... (useEffect để fetchRoomDetail giữ nguyên như trước) ...
     if (!roomId || !API_BASE_URL) {
-        setError("ID phòng hoặc URL API không hợp lệ.");
-        setLoading(false);
-        return;
+      setError("ID phòng hoặc URL API không hợp lệ.");
+      setLoading(false);
+      return;
     }
 
     const fetchRoomDetail = async () => {
@@ -32,7 +33,7 @@ const RoomDetail = () => {
         setLoading(true);
         setError(null);
         const response = await axios.get(`${API_BASE_URL}/room/getRoomById/${roomId}`);
-        
+
         if (response.data && response.data.status === "success") {
           setRoom(response.data.data);
         } else {
@@ -60,8 +61,8 @@ const RoomDetail = () => {
     }
 
     if (!room) {
-        alert("Thông tin phòng không khả dụng.");
-        return;
+      alert("Thông tin phòng không khả dụng.");
+      return;
     }
 
     setIsRegistering(true);
@@ -105,14 +106,25 @@ const RoomDetail = () => {
 
 
   const facilitiesList = room.accommodations || [];
-  const availableSlots = room.available_slots !== undefined ? room.available_slots : room.capacity; 
+  const availableSlots = room.available_slots !== undefined ? room.available_slots : room.capacity;
 
   return (
     <div className="p-6 border-t max-w-5xl mx-auto mt-10">
       <div className="flex flex-col lg:flex-row gap-10">
         {/* Hình ảnh */}
         <div className="flex-1">
-          <img /* ... */ />
+          <RoomItem
+            key={room.id}
+            id={room.id}
+            image={room.image} // RoomItem sẽ xử lý `${BACKEND_STATIC_URL}/uploads/${room.image}`
+            name={room.room_number}
+            building={room.building_name}
+            gender={room.gender}
+            capacity={room.capacity}
+            floor={room.floor}
+            facilities={room.accommodations || []}
+            available={room.available_slots} // Truyền thẳng available_slots từ API
+          />
         </div>
 
         {/* Thông tin chi tiết */}
@@ -124,15 +136,15 @@ const RoomDetail = () => {
           {/* Hiển thị thông báo đăng ký */}
           {registrationMessage && (
             <p className={`mt-4 p-3 rounded-md text-sm ${registrationMessage.includes('thành công') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                {registrationMessage}
+              {registrationMessage}
             </p>
           )}
 
           {availableSlots > 0 ? (
-            <button 
-                onClick={handleRoomRegistration}
-                className="mt-6 px-6 py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition font-medium shadow-md disabled:opacity-50"
-                disabled={isRegistering || registrationMessage.includes('thành công')} // Vô hiệu hóa nếu đang xử lý hoặc đã thành công
+            <button
+              onClick={handleRoomRegistration}
+              className="mt-6 px-6 py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition font-medium shadow-md disabled:opacity-50"
+              disabled={isRegistering || registrationMessage.includes('thành công')} // Vô hiệu hóa nếu đang xử lý hoặc đã thành công
             >
               {isRegistering ? 'Đang xử lý...' : (registrationMessage.includes('thành công') ? 'Đã gửi yêu cầu' : 'Đăng ký phòng này')}
             </button>

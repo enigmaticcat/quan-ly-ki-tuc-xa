@@ -130,6 +130,7 @@ exports.getAllRooms = async (req, res) => {
 exports.getRoomById = async (req, res) => {
     const { id } = req.params;
     try {
+        // Lấy thông tin cơ bản + danh sách tiện nghi
         const result = await pool.query(`
             SELECT r.*, 
                    COALESCE(array_agg(ra.accommodation) FILTER (WHERE ra.accommodation IS NOT NULL), '{}') AS accommodations
@@ -142,12 +143,34 @@ exports.getRoomById = async (req, res) => {
         if (result.rows.length === 0) {
             return res.status(404).json({ status: "error", message: "Room not found" });
         }
-        res.json({ status: "success", data: result.rows[0] });
+
+        const room = result.rows[0];
+
+        // Thêm phần đếm số sinh viên đã đăng ký phòng này
+        const occupancyResult = await pool.query(
+            `SELECT COUNT(id) as occupied_count 
+             FROM ROOMREGISTRATION 
+             WHERE room_id = $1 AND status = 'Approved'`,
+            [id]
+        );
+
+        const occupied_slots = parseInt(occupancyResult.rows[0].occupied_count, 10) || 0;
+        const available_slots = room.capacity - occupied_slots;
+
+        res.json({ 
+            status: "success", 
+            data: {
+                ...room,
+                occupied_slots,
+                available_slots
+            }
+        });
     } catch (err) {
         console.error("Get Room By ID Error:", err.message);
         res.status(500).json({ status: "error", message: "Failed to retrieve room" });
     }
 }
+
 exports.getStudentsInRoom = async (req, res) => {
     const { roomId } = req.params;
     try {

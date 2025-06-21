@@ -2,7 +2,7 @@ const pool = require("../database");
 const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 const crypto = require("crypto");
-// dotenv.config({ path: "../process.env" });
+dotenv.config({ path: "../process.env" });
 const jwt = require('jsonwebtoken'); // IMPORT JWT
 
 const generateOTP = () => {

@@ -14,6 +14,7 @@ const ListForms = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [adminReply, setAdminReply] = useState('');
   const [newStatus, setNewStatus] = useState(''); // 'Approved', 'Rejected', 'Processing'
+  const [formDetailModal, setFormDetailModal] = useState(null);
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const BACKEND_STATIC_URL = 'http://localhost:5000'; // Cho file đính kèm
@@ -30,7 +31,7 @@ const ListForms = () => {
       // Backend API getAllForms đã JOIN với USERS để lấy user_fullname, user_email
       const response = await axios.get(`${API_BASE_URL}/form/getAllForms`);
       if (response.data && response.data.status === "success") {
-        setForms(response.data.data.sort((a,b) => b.id - a.id)); // Mới nhất lên đầu
+        setForms(response.data.data.sort((a, b) => b.id - a.id)); // Mới nhất lên đầu
       } else {
         setError(response.data.message || "Không thể tải danh sách đơn từ.");
       }
@@ -56,8 +57,8 @@ const ListForms = () => {
     if (!selectedForm || !newStatus) return;
 
     if (newStatus === 'Rejected' && !adminReply.trim()) {
-        toast.error("Vui lòng nhập lý do từ chối/phản hồi.");
-        return;
+      toast.error("Vui lòng nhập lý do từ chối/phản hồi.");
+      return;
     }
 
     try {
@@ -80,37 +81,21 @@ const ListForms = () => {
       toast.error(err.response?.data?.message || "Lỗi server khi xử lý đơn từ.");
     }
   };
-  
+
   // Hàm xem chi tiết đơn từ (có thể mở modal hoặc trang mới)
   const viewFormDetails = async (formId) => {
-    // Tạm thời dùng alert để hiển thị chi tiết, bạn có thể tạo modal/trang riêng
     try {
-        const response = await axios.get(`${API_BASE_URL}/form/getFormById/${formId}`);
-        if (response.data && response.data.status === 'success') {
-            const formDetail = response.data.data;
-            let detailString = `Đơn từ #${formDetail.id}\n`;
-            detailString += `Người gửi: ${formDetail.user_fullname || `User ID: ${formDetail.user_id}`}\n`;
-            detailString += `Loại đơn: ${formDetail.form_type}\n`;
-            detailString += `Nội dung: ${formDetail.form_description}\n`;
-            detailString += `Trạng thái: ${formDetail.form_status}\n`;
-            detailString += `Phản hồi Admin: ${formDetail.form_reply || '-'}\n`;
-            detailString += `Ngày gửi: ${new Date(formDetail.created_at).toLocaleString('vi-VN')}\n`;
-            if (formDetail.attachments && formDetail.attachments.length > 0) {
-                detailString += `File đính kèm: ${formDetail.attachments[0].filename} (URL: ${BACKEND_STATIC_URL}/uploads/${formDetail.attachments[0].file_url})\n`;
-                 // Thêm link để tải file
-                detailString += `Tải file: ${BACKEND_STATIC_URL}/uploads/${formDetail.attachments[0].file_url}`;
-
-            } else {
-                detailString += "Không có file đính kèm.\n";
-            }
-            alert(detailString);
-        } else {
-            toast.error("Không thể tải chi tiết đơn từ.");
-        }
+      const response = await axios.get(`${API_BASE_URL}/form/getFormById/${formId}`);
+      if (response.data && response.data.status === 'success') {
+        setFormDetailModal(response.data.data); // show in modal
+      } else {
+        toast.error("Không thể tải chi tiết đơn từ.");
+      }
     } catch (error) {
-        toast.error("Lỗi khi tải chi tiết đơn từ.");
+      toast.error("Lỗi khi tải chi tiết đơn từ.");
     }
   };
+
 
 
   if (loading) return <p className="p-8 text-center text-gray-600">Đang tải danh sách đơn từ...</p>;
@@ -125,7 +110,7 @@ const ListForms = () => {
           Không có đơn từ nào.
         </p>
       )}
-
+      
       {forms.length > 0 && (
         <div className="overflow-x-auto bg-white shadow-md rounded-lg">
           <table className="min-w-full w-full text-sm text-left text-gray-700">
@@ -158,30 +143,30 @@ const ListForms = () => {
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <button
-                        onClick={() => viewFormDetails(form.id)}
-                        className="text-blue-600 hover:underline text-xs mr-3"
+                      onClick={() => viewFormDetails(form.id)}
+                      className="text-blue-600 hover:underline text-xs mr-3"
                     >
-                        Xem chi tiết
+                      Xem chi tiết
                     </button>
                     {form.form_status && form.form_status.toLowerCase() === 'pending' && (
-                        <>
+                      <>
                         <button
-                            onClick={() => openProcessModal(form, 'Approved')}
-                            className="text-green-600 hover:underline text-xs mr-3"
+                          onClick={() => openProcessModal(form, 'Approved')}
+                          className="text-green-600 hover:underline text-xs mr-3"
                         >
-                            Duyệt
+                          Duyệt
                         </button>
                         <button
-                            onClick={() => openProcessModal(form, 'Rejected')}
-                            className="text-red-600 hover:underline text-xs"
+                          onClick={() => openProcessModal(form, 'Rejected')}
+                          className="text-red-600 hover:underline text-xs"
                         >
-                            Từ chối
+                          Từ chối
                         </button>
-                        </>
+                      </>
                     )}
-                     {form.form_status && form.form_status.toLowerCase() !== 'pending' && (
-                        <span className="text-xs text-gray-400 italic">Đã xử lý</span>
-                     )}
+                    {form.form_status && form.form_status.toLowerCase() !== 'pending' && (
+                      <span className="text-xs text-gray-400 italic">Đã xử lý</span>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -198,8 +183,8 @@ const ListForms = () => {
               Xử lý Đơn từ #{selectedForm.id} - Loại: {selectedForm.form_type}
             </h3>
             <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-1"><strong>Nội dung SV gửi:</strong></p>
-                <p className="text-sm text-gray-800 p-2 border rounded bg-gray-50 max-h-32 overflow-y-auto">{selectedForm.form_description}</p>
+              <p className="text-sm text-gray-600 mb-1"><strong>Nội dung SV gửi:</strong></p>
+              <p className="text-sm text-gray-800 p-2 border rounded bg-gray-50 max-h-32 overflow-y-auto">{selectedForm.form_description}</p>
             </div>
             <div className="mb-4">
               <label htmlFor="adminReply" className="block text-sm font-medium text-gray-700">
@@ -237,6 +222,45 @@ const ListForms = () => {
           </div>
         </div>
       )}
+      {formDetailModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full p-6 relative">
+            <h2 className="text-xl font-semibold mb-4">Chi tiết Đơn Từ #{formDetailModal.id}</h2>
+
+            <div className="space-y-2 text-sm text-gray-700">
+              <p><strong>Người gửi:</strong> {formDetailModal.user_fullname || `User ID: ${formDetailModal.user_id}`}</p>
+              <p><strong>Loại đơn:</strong> {formDetailModal.form_type}</p>
+              <p><strong>Nội dung:</strong> {formDetailModal.form_description}</p>
+              <p><strong>Trạng thái:</strong> {formDetailModal.form_status}</p>
+              <p><strong>Phản hồi Admin:</strong> {formDetailModal.form_reply || '-'}</p>
+              <p><strong>Ngày gửi:</strong> {new Date(formDetailModal.created_at).toLocaleString('vi-VN')}</p>
+              {formDetailModal.attachments && formDetailModal.attachments.length > 0 ? (
+                <div>
+                  <p><strong>File đính kèm:</strong> {formDetailModal.attachments[0].filename}</p>
+                  <a
+                    href={`${BACKEND_STATIC_URL}/uploads/${formDetailModal.attachments[0].file_url}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline text-sm"
+                  >
+                    Tải file
+                  </a>
+                </div>
+              ) : (
+                <p><strong>File đính kèm:</strong> Không có</p>
+              )}
+            </div>
+
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl"
+              onClick={() => setFormDetailModal(null)}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
