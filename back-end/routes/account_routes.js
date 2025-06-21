@@ -1,15 +1,12 @@
-// C:\Users\Admin\OneDrive - Hanoi University of Science and Technology\backup\kì 6\Project 2\PRJ\quan-ly-ki-tuc-xa\back-end\routes\user_routes.js
-const router = require('express').Router();
-const userController = require('../api/User/user');
-const upload = require('../middleware/upload'); // IMPORT MIDDLEWARE UPLOAD
+// C:\Users\Admin\OneDrive - Hanoi University of Science and Technology\backup\kì 6\Project 2\PRJ\quan-ly-ki-tuc-xa\back-end\routes\account_routes.js
+const router = require("express").Router();
+const accountRouting = require("../api/account"); // Đảm bảo đường dẫn này đúng
 
-// Áp dụng middleware upload.single('tên_trường_file') cho route này
-// 'avatar' là tên trường mà frontend sẽ gửi file ảnh lên
-router.post('/adminCreateStudent', upload.single('avatar'), userController.adminCreateStudent); 
-
-router.get('/getUserInfo/:id', userController.getUserInfo);
-router.put('/updateUserInfo/:id', upload.single('avatar'), userController.updateUserInfo); // Cũng nên thêm cho update
-router.get('/getAllUsers', userController.getAllUsers);
-router.delete('/deleteUser/:id', userController.deleteUser);
+// Routes liên quan đến tài khoản (đăng nhập, đăng ký, quên mật khẩu...)
+router.post("/login", accountRouting.login); // << ROUTE ĐĂNG NHẬP CHO ADMIN VÀ USER
+router.post("/register", accountRouting.register); // ROUTE ĐĂNG KÝ
+router.post("/forgot-password", accountRouting.forgotPassword);
+router.post("/reset-password-confirmation", accountRouting.verifyResetPasswordToken);
+router.post("/reset-password", accountRouting.resetPassword);
 
 module.exports = router;
